@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <Title>Weather Application</Title>
+        <script 
+            src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+        </script>
+        <script
+            src="http://code.jquery.com/mobile/1.5.0-rc1/jquery.mobile-1.5.0-rc1.min.js">
+        </script>
+        
+        <link type="text/css" rel="stylesheet"
+              href="http://code.jquery.com/mobile/1.5.0-rc1/jquery.mobile-1.5.0-rc1.min.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+        <script>
+            function launch()
+            {
+                //obtain key and zipcode values
+                var key = document.getElementById("apikey").value;
+                var zip = document.getElementById("zip").value;
+                //create URL
+                var url = 'https://api.openweathermap.org/data/2.5/forecast?zip=' + zip + '&appid=' + key + '&units=imperial';
+                $.ajax({
+                    type : "GET",
+                    url : url,
+                    dataType : "jsonp",
+                    success: function(msg)
+                    {
+                        var json = msg;
+                        if(json.cod = 200)
+                        {
+                            //obtain city name
+                            var city = json.city.name + " Weather";
+                            //instantiate table
+                            tableValues = `<table data-role="table" class="ui-responsive ui-table"; width=50%; border='1'><tr><th>Time</th><th>Description</th><th>Temp (F)</th</tr>`;
+                            //each function to obtain date and time, weather description, and temperature for each individual 3 hr forecast
+                            $.each(json.list, function(x, entry){
+                                //add necessary information into table row
+                                tableValues += `<tr><td>${new Date(entry.dt_txt).toLocaleString()}</td><td>${entry.weather[0].description}</td><td>${entry.main.temp}</td></tr>`;
+                            });
+                            //display city and table in empty div
+                            document.getElementById("weather").innerHTML = city + tableValues;
+                        }
+                       else
+                            document.getElementById("weather").innerHTML = "ERROR";
+                    },
+                    //if ajax call does not work, display error message
+                    error: function(jgXHR, textStatus, errorThrown)
+                    {
+                        alert("Error: Invalid Input(s)");
+                    }
+                    
+                })
+                //API KEY: 7d675cad95e3bbac964073c148162eca
+            }
+        
+        
+        </script>
+        
+    </head>
+    <body>
+        <!--jQuery mobile header-->
+        <div data-role="header" data-position="fixed">
+            <h1>Weather App</h1>
+        </div>
+        <!--Text boxes for apikey and zip code-->
+        <input type="text" id="apikey" placeholder="API Key">
+        <input type="text" id="zip" placeholder="Zip Code">
+        <!--create button that when clicked, will run the functions to create desired output-->
+        <input type="button" value="Launch!" onclick="launch();">
+        <div id="weather"></div>
+        <!--jQuery mobile footer-->
+<!--        <div data-role="footer" data-position="fixed">
+            <h1>End</h1>
+        </div>-->
+    </body>
+</html>
